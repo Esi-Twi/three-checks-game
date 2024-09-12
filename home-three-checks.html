@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Three Checks</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        } 
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        section {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        #grid {
+            display: flex;
+            flex-wrap: wrap;
+            width: 450px;
+            height: 450px;
+        }
+        section p {
+            font-size: 17px;
+        }
+        section img {
+            width: 150px;
+            height: 150px;
+            cursor: pointer;
+        }
+
+        @media only screen and (max-width: 500px) {
+            #grid {
+                width: 300px;
+                height: 300px;
+            }
+            section img {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        @media only screen and (max-width: 440px) {
+            #grid {
+                width: 390px;
+                height: 390px;
+            }
+            section img {
+                width: 130px;
+                height: 130px;
+            }
+        }
+
+        @media only screen and (max-width: 420px) {
+            #grid {
+                width: 375px;
+                height: 375px;
+            }
+            section img {
+                width: 125px;
+                height: 125px;
+            }
+        }
+
+        @media only screen and (max-width: 380px) {
+            #grid {
+                width: 330px;
+                height: 330px;
+            }
+            section img {
+                width: 110px;
+                height: 110px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section>
+        <p>Select 3 identical items within a straight or diagonal line to get a point</p>
+        <h1>Score: <span id="score">0</span></h1>
+        <p>Get 5 points to win</p>
+        <div id="grid"></div>
+    </section>
+
+    <script>
+        const grid = document.getElementById('grid')
+        const scoreDisplay = document.getElementById('score')
+
+        const checks = [
+            {
+                name: 'orange-headphone',
+                src: 'orange-headphone.jpg'
+            }, {
+                name: 'shoe',
+                src: 'shoe2.jpg'
+            }, {
+                name: 'small-speakers',
+                src: 'small-speakers.jpg'
+            }, {
+                name: 'orange-headphone',
+                src: 'orange-headphone.jpg'
+            }, {
+                name: 'shoe',
+                src: 'shoe2.jpg'
+            }, {
+                name: 'small-speakers',
+                src: 'small-speakers.jpg'
+            }, {
+                name: 'orange-headphone',
+                src: 'orange-headphone.jpg'
+            }, {
+                name: 'shoe',
+                src: 'shoe2.jpg'
+            }, {
+                name: 'small-speakers',
+                src: 'small-speakers.jpg'
+            } 
+        ]
+
+        /*const checks = [
+            {
+                name: 'orange-headphone',
+                src: 'orange-headphone.jpg'
+            }, {
+                name: 'orange-headphone',
+                src: 'orange-headphone.jpg'
+            }, {
+                name: 'orange-headphone',
+                src: 'orange-headphone.jpg'
+            }, {
+                name: 'orange-headphone',
+                src: 'orange-headphone.jpg'
+            }, {
+                name: 'orange-headphone',
+                src: 'orange-headphone.jpg'
+            }, {
+                name: 'orange-headphone',
+                src: 'orange-headphone.jpg'
+            }, {
+                name: 'orange-headphone',
+                src: 'orange-headphone.jpg'
+            }, {
+                name: 'orange-headphone',
+                src: 'orange-headphone.jpg'
+            }, {
+                name: 'orange-headphone',
+                src: 'orange-headphone.jpg'
+            }
+        ]*/
+
+        checks.sort(() => 0.5 - Math.random())
+
+        // adding img to grid
+        function addImgs() {
+            checks.forEach((check,index) => {
+                const box = document.createElement('img')
+                box.setAttribute('src', 'music-background.jpg')
+                box.setAttribute('id', index)
+                grid.append(box)
+            }) 
+        }
+        addImgs()
+
+        const gridImgs = document.querySelectorAll('#grid img')
+
+        // adding event listener to all imgs
+        let clickedId
+        gridImgs.forEach(gridImg => {
+            gridImg.addEventListener('click', () => {
+                clickedId = gridImg.id
+                clickedImg()
+            })
+        })
+
+        // saving clicked imgs 
+        let savedImgs = []
+        let savedIds = []
+        function clickedImg() {
+            // adding id and name to array
+            if(savedImgs.length < 3) {
+                gridImgs[clickedId].setAttribute('src', checks[clickedId].src)
+                savedImgs.push(checks[clickedId].name)
+                savedIds.push(clickedId)
+            }
+
+            //checking if array is full to check array
+            if(savedImgs.length == 3) {
+                checkArray()
+            }
+        }
+
+        //when you lose the game
+        function gameLose() {
+            // when the images are different 
+            setTimeout(() => {
+                gridImgs[savedIds[0]].setAttribute('src', 'music-background.jpg')
+            }, 300)
+
+            setTimeout(() => {
+                gridImgs[savedIds[1]].setAttribute('src', 'music-background.jpg')
+            }, 600)
+
+            setTimeout(() => {
+                gridImgs[savedIds[2]].setAttribute('src', 'music-background.jpg')
+                
+                savedIds = []
+                savedImgs = []
+            }, 900)
+
+            checks.sort(() => 0.5 - Math.random())
+        }
+
+        let points = 0
+        function checkArray() {
+            //checking when images are the same
+            if(savedImgs[0] == savedImgs[1] && savedImgs[1] == savedImgs[2]) {
+                //checking for identical id
+                if(savedIds[0] == savedIds[1] || savedIds[1] == savedIds[2] || savedIds[0] == savedIds[2]) {
+                    gameLose()
+                    
+                } else {
+                    checkWin()                    
+                }
+                
+            } else {
+               gameLose()
+            }
+        }
+
+
+        function gameWin() {
+            // player matches win conditions 
+            setTimeout(() => {
+                gridImgs[savedIds[0]].setAttribute('src', 'music-background.jpg')
+            }, 400)
+
+            setTimeout(() => {
+                gridImgs[savedIds[1]].setAttribute('src', 'music-background.jpg')
+            }, 800)
+
+            setTimeout(() => {
+                gridImgs[savedIds[2]].setAttribute('src', 'music-background.jpg')
+                
+                savedIds = []
+                savedImgs = []
+            }, 1000)
+
+            points ++
+            scoreDisplay.textContent = points
+
+            checkFinalWin()
+        }
+
+        function checkFinalWin () {
+            if(points == 5) {
+                alert('Congratulations, you have won the game!!')
+
+                points = 0
+                scoreDisplay.textContent = points
+                gameWin()
+            }
+        }
+
+        function checkNumber(num1,num2, num3) {
+            if(savedIds[0] == num1 && savedIds[1] == num2 && savedIds[2] == num3) {
+                gameWin()
+            } else if(savedIds[0] == num1 && savedIds[1] == num3 && savedIds[2] == num2) {
+                gameWin()
+            } else if(savedIds[0] == num2 && savedIds[1] == num1 && savedIds[2] == num3) {
+                gameWin()
+            } else if(savedIds[0] == num2 && savedIds[1] == num3 && savedIds[2] == num1) {
+                gameWin()
+            } else if(savedIds[0] == num3 && savedIds[1] == num1 && savedIds[2] == num2) {
+                gameWin()
+            } else if(savedIds[0] == num3 && savedIds[1] == num2 && savedIds[2] == num1) {
+                gameWin()
+            }
+        }
+
+
+        function checkWin() {
+            // const winningArrays = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]]
+
+            // [0,1,2] [0,2,1] [1,0,2] [1,2,0] [2,0,1] [2,1,0]
+
+            let oldScore = points
+            
+            checkNumber(0,1,2)
+            checkNumber(3,4,5)
+            checkNumber(6,7,8)
+            checkNumber(0,3,6)
+            checkNumber(1,4,7)
+            checkNumber(2,5,8)
+            checkNumber(0,4,8)
+            checkNumber(2,4,6)
+
+            let newScore = points
+
+            // checking for non-matching array
+            if(oldScore == newScore) {
+                gameLose()
+            }
+        }
+
+
+
+    </script>
+</body>
+</html>
